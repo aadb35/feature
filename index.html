@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Feature Survey</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    h1 { color: #2b6cb0; }
+    .feature { margin: 8px 0; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #result { margin-top: 20px; background: #f0f4f8; padding: 15px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+  <h1>🧩 Feature Survey</h1>
+  <form id="featureForm">
+    <div class="feature"><input type="checkbox" name="feature" value="Mobile-optimized site"> Mobile-optimized site</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Fast checkout process"> Fast checkout process</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Product reviews"> Product reviews</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Personalized recommendations"> Personalized recommendations</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Email marketing"> Email marketing</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Loyalty program"> Loyalty program</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Live chat support"> Live chat support</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Analytics tracking"> Analytics tracking</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Abandoned cart reminders"> Abandoned cart reminders</div>
+    <div class="feature"><input type="checkbox" name="feature" value="Multilingual support"> Multilingual support</div>
+
+    <button type="submit">See Results</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const allFeatures = Array.from(document.querySelectorAll('input[name="feature"]')).map(f => f.value);
+
+    document.getElementById("featureForm").onsubmit = function(e) {
+      e.preventDefault();
+      const selected = Array.from(document.querySelectorAll('input[name="feature"]:checked'))
+                            .map(cb => cb.value);
+      const missing = allFeatures.filter(f => !selected.includes(f));
+      const resultHTML = `
+        <h2>✅ You have ${selected.length} of ${allFeatures.length} features</h2>
+        ${missing.length > 0 ? "<p>🚫 You're missing:</p><ul>" + missing.map(m => `<li>${m}</li>`).join('') + "</ul>" : "<p>🎉 You have all the features!</p>"}
+      `;
+      document.getElementById("result").innerHTML = resultHTML;
+    };
+  </script>
+
+</body>
+</html>
