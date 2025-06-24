@@ -1,50 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Feature Survey</title>
+  <meta charset="UTF-8" />
+  <title>Feature Survey - Step by Step with Levels</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    h1 { color: #2b6cb0; }
-    .feature { margin: 8px 0; }
-    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
-    #result { margin-top: 20px; background: #f0f4f8; padding: 15px; border-radius: 8px; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #2b6cb0;
+    }
+    .feature-slide {
+      display: none;
+      margin-top: 20px;
+    }
+    .feature-slide.active {
+      display: block;
+    }
+    .feature-image {
+      max-width: 100%;
+      height: 200px;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .level {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #444;
+    }
+    .level.basic {
+      color: #2b6cb0;
+    }
+    .level.intermediate {
+      color: #d69e2e;
+    }
+    .level.advanced {
+      color: #c53030;
+    }
+    button {
+      margin: 15px 10px 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 30px;
+      background: #f0f4f8;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: left;
+    }
+    #result h3 {
+      margin-top: 20px;
+      color: #2b6cb0;
+    }
   </style>
 </head>
 <body>
 
   <h1>🧩 Feature Survey</h1>
-  <form id="featureForm">
-    <div class="feature"><input type="checkbox" name="feature" value="Mobile-optimized site"> Mobile-optimized site</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Fast checkout process"> Fast checkout process</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Product reviews"> Product reviews</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Personalized recommendations"> Personalized recommendations</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Email marketing"> Email marketing</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Loyalty program"> Loyalty program</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Live chat support"> Live chat support</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Analytics tracking"> Analytics tracking</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Abandoned cart reminders"> Abandoned cart reminders</div>
-    <div class="feature"><input type="checkbox" name="feature" value="Multilingual support"> Multilingual support</div>
 
-    <button type="submit">See Results</button>
+  <form id="featureForm">
+
+    <div id="slides">
+      <!-- Slides will be inserted by JS -->
+    </div>
+
+    <div>
+      <button type="button" id="prevBtn" disabled>Previous</button>
+      <button type="button" id="nextBtn">Next</button>
+      <button type="submit" id="submitBtn" style="display:none;">See Results</button>
+    </div>
   </form>
 
   <div id="result"></div>
 
   <script>
-    const allFeatures = Array.from(document.querySelectorAll('input[name="feature"]')).map(f => f.value);
+    const features = [
+      { name: "Mobile-optimized site", level: "Basic", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" },
+      { name: "Fast checkout process", level: "Basic", image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Product reviews", level: "Basic", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80" },
+      { name: "Personalized recommendations", level: "Intermediate", image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=400&q=80" },
+      { name: "Email marketing", level: "Intermediate", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" },
+      { name: "Loyalty program", level: "Intermediate", image: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=400&q=80" },
+      { name: "Live chat support", level: "Advanced", image: "https://images.unsplash.com/photo-1556741533-f6acd647d2fb?auto=format&fit=crop&w=400&q=80" },
+      { name: "Analytics tracking", level: "Advanced", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" },
+      { name: "Abandoned cart reminders", level: "Advanced", image: "https://images.unsplash.com/photo-1516707570264-4ab741d883f6?auto=format&fit=crop&w=400&q=80" },
+      { name: "Multilingual support", level: "Advanced", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" }
+    ];
 
-    document.getElementById("featureForm").onsubmit = function(e) {
-      e.preventDefault();
-      const selected = Array.from(document.querySelectorAll('input[name="feature"]:checked'))
-                            .map(cb => cb.value);
-      const missing = allFeatures.filter(f => !selected.includes(f));
-      const resultHTML = `
-        <h2>✅ You have ${selected.length} of ${allFeatures.length} features</h2>
-        ${missing.length > 0 ? "<p>🚫 You're missing:</p><ul>" + missing.map(m => `<li>${m}</li>`).join('') + "</ul>" : "<p>🎉 You have all the features!</p>"}
+    const levels = ["Basic", "Intermediate", "Advanced"];
+
+    const slidesContainer = document.getElementById('slides');
+
+    // Dynamically build slides with levels and images
+    features.forEach((feature, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'feature-slide' + (index === 0 ? ' active' : '');
+      slide.innerHTML = `
+        <img src="${feature.image}" alt="${feature.name}" class="feature-image" />
+        <div class="level ${feature.level.toLowerCase()}">Level: ${feature.level}</div>
+        <p>Do you have <strong>${feature.name}</strong>?</p>
+        <label><input type="radio" name="feature${index}" value="yes" required> Yes</label>
+        <label><input type="radio" name="feature${index}" value="no"> No</label>
       `;
-      document.getElementById("result").innerHTML = resultHTML;
-    };
+      slidesContainer.appendChild(slide);
+    });
+
+    const slides = document.querySelectorAll('.feature-slide');
+    let currentSlide = 0;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      prevBtn.disabled = index === 0;
+      nextBtn.style.display = index === slides.length - 1 ? 'none' : 'inline-block';
+      submitBtn.style.display = index === slides.length - 1 ? 'inline-block' : 'none';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      const currentInputs = slides[currentSlide].querySelectorAll('input[type="radio"]');
+      const answered = Array.from(currentInputs).some(input => input.checked);
+
+      if (!answered) {
+        alert('Please select Yes or No before continuing.');
+        return;
+      }
+
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    });
+
+    showSlide(currentSlide);
+
+    document.getElementById('featureForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      let yesFeatures = [];
+      let noFeatures = [];
+
+      features.forEach((feature, i) => {
+        const radios = document.getElementsByName(`feature${i}`);
+        const selected = Array.from(radios).find(r => r.checked)?.value;
+        if (selected === 'yes') yesFeatures.push(feature);
+        else noFeatures.push(feature);
+      });
+
+      const resultDiv = document.getElementById('result');
+      let html = `<h2>✅ You have ${yesFeatures.length} of ${features.length} features</h2>`;
+
+      if (noFeatures.length > 0) {
+        html += `<p>🚫 You're missing the following features, grouped by level:</p>`;
+        levels.forEach(level => {
+          const missingThisLevel = noFeatures.filter(f => f.level === level);
+          if (missingThisLevel.length > 0) {
+            html += `<h3>${level} Features</h3><ul>`;
+            missingThisLevel.forEach(f => {
+              html += `<li>${f.name}</li>`;
+            });
+            html += `</ul>`;
+          }
+        });
+      } else {
+        html += "<p>🎉 You have all the features!</p>";
+      }
+
+      resultDiv.innerHTML = html;
+      resultDiv.scrollIntoView({ behavior: 'smooth' });
+    });
   </script>
 
 </body>
